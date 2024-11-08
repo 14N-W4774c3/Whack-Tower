@@ -9,6 +9,8 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Controls the force of player jumps.")]
     [SerializeField] private float jumpForce = 12f;    // Force applied when the player jumps
 
+    public float CamRot = 0.0f;
+
     private Rigidbody rb;            // Reference to the Rigidbody component
     private bool isGrounded;         // Tracks whether the player is on the ground
 
@@ -26,13 +28,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void Move()
     {
+        transform.rotation = Quaternion.Euler(0.0f, CamRot, 0.0f);
         // Get input from horizontal and vertical axes (WASD or arrow keys)
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
         // Create a movement direction vector based on input
         Vector3 moveDirection = new Vector3(horizontalInput, 0f, verticalInput).normalized;
-
         // Move the player if there is any input
         if (moveDirection.magnitude >= 0.1f)
         {

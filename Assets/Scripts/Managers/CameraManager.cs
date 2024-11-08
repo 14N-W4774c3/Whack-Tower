@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour
@@ -16,7 +18,7 @@ public class CameraManager : MonoBehaviour
     [Header("Cameras")]
     [Tooltip("Click here to add or remove camera references.")]
     public List<CameraData> cameras = new List<CameraData>(); // Creates a list of class cameras
-    private int currentCameraIndex = 0; // Index for current camera accessible
+    public int currentCameraIndex = 0; // Index for current camera accessible
 
     [Header("Transition Options")]
     [Tooltip("Place transition prefab if testing for an animation. Leave blank for no animation.")]
@@ -28,25 +30,62 @@ public class CameraManager : MonoBehaviour
     [Tooltip("Place reference to displayCameraText for displaying camera name.")]
     public TMP_Text displayCameraText; // Reference to the TMP_Text object for displaying the camera name
 
+    [SerializeField] private float RotateRange = 30;
+    [SerializeField] private GameObject Player;
+
     private void Start()
     {
         // Checks if a camera exists and isn't null
         if (cameras.Count > 0 && cameras[0].cameraObject != null)
         {
+            
             ActivateCamera(0); // Set the initial active camera
+            Pass(0);
         }
     }
 
     private void Update()
     {
         // If the correct input is pressed down, activate the previous camera
-        if (Input.GetKeyDown(KeyCode.LeftControl))
+        if (Input.GetKeyDown(KeyCode.Z))
         {
             StartCoroutine(SwitchCamera(true)); // Checks if the input is asking for the previous camera, aka going left in the list
         } // Else, if the other correct input is pressed down, activate the next camera
-        else if (Input.GetKeyDown(KeyCode.RightControl))
+        else if (Input.GetKeyDown(KeyCode.X))
         {
             StartCoroutine(SwitchCamera(false)); // Checks if the input is asking for the next camera, aka going right in the list
+        }
+
+
+        if (Input.GetKey(KeyCode.W))
+        {
+            RotateCamera(currentCameraIndex, 0, -0.1f);
+        }
+
+        if (Input.GetKey(KeyCode.A))
+        { 
+            RotateCamera(currentCameraIndex, -0.1f, 0);
+        }
+
+        if (Input.GetKey(KeyCode.S))
+        {
+            RotateCamera(currentCameraIndex, 0, 0.1f);
+        }
+
+        if (Input.GetKey(KeyCode.D))
+        {
+            RotateCamera(currentCameraIndex, 0.1f, 0);
+        }
+
+
+        if (Input.GetKey(KeyCode.Q))
+        {
+            ZoomCamera(currentCameraIndex, -0.1f);
+        }
+
+        if (Input.GetKey(KeyCode.E))
+        {
+            ZoomCamera(currentCameraIndex, 0.1f);
         }
     }
 
@@ -77,6 +116,7 @@ public class CameraManager : MonoBehaviour
         }
 
         UpdateDisplayCamText(); // Update the camera name text on activation
+        Pass(index);
     }
 
     private void NextCamera()
@@ -150,4 +190,41 @@ public class CameraManager : MonoBehaviour
             }
         }
     }
+
+    private void RotateCamera(int index, float deltaX, float deltaY){ //rotates camera based on user input
+        float dX = deltaX;
+        float dY = deltaY;
+        CameraOffsetHolder offsets = cameras[index].cameraObject.GetComponent<CameraOffsetHolder>();
+        
+        if  ((offsets.offsetX + (dX*5)) < -RotateRange || (offsets.offsetX + (dX * 5)) > RotateRange)
+        {
+            dX = 0;
+        }
+        if ((offsets.offsetY + (dY * 5)) < -RotateRange || (offsets.offsetY + (dY * 5)) > RotateRange)
+        {
+            dY = 0;
+        }
+
+        cameras[currentCameraIndex].cameraObject.transform.Rotate(0.0f, dX, 0.0f, Space.World);
+        cameras[currentCameraIndex].cameraObject.transform.Rotate(dY, 0.0f, 0.0f, Space.Self);
+
+        offsets.offsetX += dX;
+        offsets.offsetY += dY;
+        Pass(index);
+
+    }
+
+    private void Pass(int index){ //passes current camera rotation to playermovement script
+        Player.GetComponent<PlayerMovement>().CamRot = cameras[index].cameraObject.transform.rotation.eulerAngles.y;
+    }
+
+    private void ZoomCamera(int index, float dZ){
+        Camera cam = cameras[index].cameraObject.GetComponent<Camera>();
+        if ((cam.fieldOfView + (dZ * 5)) < 30 || (cam.fieldOfView + (dZ * 5)) > 75)
+        {
+            dZ = 0;
+        }
+        cam.fieldOfView += dZ;
+    }
 }
+    
