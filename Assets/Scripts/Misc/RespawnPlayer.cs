@@ -33,6 +33,10 @@ public class RespawnPlayer : MonoBehaviour
 
             // Start a coroutine to unfreeze rotation after a short delay
            // StartCoroutine(UnfreezeRotation());
+        } else if (collider.gameObject.CompareTag("Ball"))
+        {
+            Destroy(collider.gameObject); // Destroy all balls that hit the bottom of the world
+            //Debug.Log("Void caught ball");
         }
     }
 
