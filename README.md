@@ -12,3 +12,6 @@ Ian Wallace
 Carolyn Hope
 Michael Quinn
 Eion Ling
+
+### Music Credits
+Monkeys Spinning Monkeys by Kevin Macleod
