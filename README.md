@@ -8,10 +8,10 @@ Whack Tower.exe
 
 ## Credits
 ### Programming Team
-Ian Wallace
+Ian Wallace <br />
+Michael Quinn <br />
+Eion Ling <br />
 Carolyn Hope
-Michael Quinn
-Eion Ling
 
 ### Music Credits
 Monkeys Spinning Monkeys by Kevin Macleod
